@@ -17,41 +17,26 @@ import { useRouter } from 'next/navigation'
 import { UserSubscriptionContext } from '@/app/(context)/UserSubscriptionContext'
 import { TotalCreditUsageContext } from '@/app/(context)/TotalCreditUsageContent'
 
-type PageProps = {
+// Define page params type
+interface PageProps {
   params: {
     'template-slug': string;
   };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
-// Define proper types for your context values
-type TotalUsageContextType = {
-  totalUsage: number;
-  setTotalUsage: React.Dispatch<React.SetStateAction<number>>;
-}
-
-type UserSubscriptionContextType = {
-  userSubscription: boolean;
-  setUserSubscription: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-type TotalCreditUsageContextType = {
-  updateCreditUsage: number;
-  setUpdateCreditUsage: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const CreateNewContent = ({ params }: PageProps) => {
+// Component definition
+const Page: React.FC<PageProps> = ({ params }) => {
   const [loading, setLoading] = useState(false);
   const [outputData, setOutputData] = useState<string>('');
   
-  const { totalUsage, setTotalUsage } = useContext(TotalUsageContext) as TotalUsageContextType;
-  const { userSubscription } = useContext(UserSubscriptionContext) as UserSubscriptionContextType;
-  const { setUpdateCreditUsage } = useContext(TotalCreditUsageContext) as TotalCreditUsageContextType;
+  const { totalUsage, setTotalUsage } = useContext(TotalUsageContext) ?? { totalUsage: 0, setTotalUsage: () => {} };
+  const { userSubscription } = useContext(UserSubscriptionContext) ?? { userSubscription: false };
+  const { setUpdateCreditUsage } = useContext(TotalCreditUsageContext) ?? { setUpdateCreditUsage: () => {} };
   
   const { user } = useUser();
   const router = useRouter();
 
-  // Find the selected template
   const selectedTemplate: TEMPLATE | undefined = Templates?.find(
     (item) => item.slug === params["template-slug"]
   );
@@ -60,7 +45,6 @@ const CreateNewContent = ({ params }: PageProps) => {
     try {
       if (totalUsage >= 10000 && !userSubscription) {
         router.push('/dashboard/billing');
-        console.log("please upgrade");
         return;
       }
 
@@ -129,4 +113,4 @@ const CreateNewContent = ({ params }: PageProps) => {
   );
 };
 
-export default CreateNewContent;
+export default Page;
