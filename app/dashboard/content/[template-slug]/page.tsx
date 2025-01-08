@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import FormSection from './_components/FormSection'
 import OutputSection from './_components/OutputSection'
 import { TEMPLATE } from '../../_components/TemplateList'
@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { chatSession } from '@/utils/AiModel'
-
 import { useUser } from '@clerk/nextjs'
 import { db } from '@/utils/db'
 import { AiOutput } from '@/utils/schema'
@@ -18,97 +17,116 @@ import { useRouter } from 'next/navigation'
 import { UserSubscriptionContext } from '@/app/(context)/UserSubscriptionContext'
 import { TotalCreditUsageContext } from '@/app/(context)/TotalCreditUsageContent'
 
-
-
-
-
-
-interface PROPS{
-    params:{
-        'template-slug'  : string,
-    }
+type PageProps = {
+  params: {
+    'template-slug': string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-const createNewContent = (props: PROPS) => {
+// Define proper types for your context values
+type TotalUsageContextType = {
+  totalUsage: number;
+  setTotalUsage: React.Dispatch<React.SetStateAction<number>>;
+}
 
+type UserSubscriptionContextType = {
+  userSubscription: boolean;
+  setUserSubscription: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+type TotalCreditUsageContextType = {
+  updateCreditUsage: number;
+  setUpdateCreditUsage: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const CreateNewContent = ({ params }: PageProps) => {
   const [loading, setLoading] = useState(false);
   const [outputData, setOutputData] = useState<string>('');
-  const {totalUsage, setTotalUsage} = useContext(TotalUsageContext);
-  const {userSubscription, setUserSubscription} = useContext(UserSubscriptionContext);
-  const {updateCreditUsage, setUpdateCreditUsage} = useContext(TotalCreditUsageContext);
-  const {user} = useUser();
+  
+  const { totalUsage, setTotalUsage } = useContext(TotalUsageContext) as TotalUsageContextType;
+  const { userSubscription } = useContext(UserSubscriptionContext) as UserSubscriptionContextType;
+  const { setUpdateCreditUsage } = useContext(TotalCreditUsageContext) as TotalCreditUsageContextType;
+  
+  const { user } = useUser();
   const router = useRouter();
 
- console.log("user",user?.primaryEmailAddress?.emailAddress)
+  // Find the selected template
+  const selectedTemplate: TEMPLATE | undefined = Templates?.find(
+    (item) => item.slug === params["template-slug"]
+  );
 
-// Unwrap the params
- const selectedTemplate: TEMPLATE | undefined = Templates?.find(
-   (item) => item.slug === props.params["template-slug"]
- );
-  
-
-  
-
-  const GenerateAiContent = async(formData: any)=>{
-    //add a dialogue box or redirect to  a page
-    if(totalUsage >=10000 && !userSubscription){
-      router.push('/dashboard/billing');
-      console.log("please upgrade");
-      return;
-    }
-    setLoading(true);
-    const selectedPrompt = selectedTemplate?.aiPrompt;
-    const  finalPrompt = JSON.stringify(formData)+ ", "+ selectedPrompt;
-
-    const result = await chatSession.sendMessage(finalPrompt);
-    setOutputData(result?.response.text());
-    console.log('data', result?.response.text())
-     await SaveinDb(formData, selectedTemplate?.slug , result?.response.text() )
-    
-    setLoading(false);
-    setUpdateCreditUsage(Date.now());
-  }
-
-
-  const SaveinDb = async(formData : any, slug : any, aiResp : string)=>{
+  const GenerateAiContent = async (formData: Record<string, any>) => {
     try {
-      const result = await db.insert(AiOutput).values({
-        formData : formData,
-        templateSlug : slug,
-        aiResponse : aiResp,
-        createdBy : user?.primaryEmailAddress?.emailAddress,
-        createdAt : moment().format('DD/MM/yyyy'),
-        
-});
-console.log("saved result",result)
+      if (totalUsage >= 10000 && !userSubscription) {
+        router.push('/dashboard/billing');
+        console.log("please upgrade");
+        return;
+      }
+
+      setLoading(true);
+      const selectedPrompt = selectedTemplate?.aiPrompt;
+      const finalPrompt = `${JSON.stringify(formData)}, ${selectedPrompt}`;
+
+      const result = await chatSession.sendMessage(finalPrompt);
+      const responseText = result?.response.text();
+      setOutputData(responseText);
+      
+      if (responseText) {
+        await SaveinDb(formData, selectedTemplate?.slug, responseText);
+      }
     } catch (error) {
-      console.log("error saving data",error)
+      console.error("Error generating content:", error);
+    } finally {
+      setLoading(false);
+      setUpdateCreditUsage(Date.now());
     }
-    
-  }
+  };
 
+  const SaveinDb = async (
+    formData: Record<string, any>, 
+    slug: string | undefined, 
+    aiResp: string
+  ) => {
+    try {
+      if (!user?.primaryEmailAddress?.emailAddress || !slug) {
+        console.error("Missing required data for saving");
+        return;
+      }
 
-  
-  
+      const result = await db.insert(AiOutput).values({
+        formData: formData,
+        templateSlug: slug,
+        aiResponse: aiResp,
+        createdBy: user.primaryEmailAddress.emailAddress,
+        createdAt: moment().format('DD/MM/yyyy'),
+      });
+
+      console.log("saved result", result);
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
 
   return (
     <div className='p-5'>
-      <Link href={'/dashboard'}>
-      <Button className='ml-5'><ArrowLeft/> Back</Button>
+      <Link href='/dashboard'>
+        <Button className='ml-5'>
+          <ArrowLeft /> Back
+        </Button>
       </Link>
       <div className='grid grid-cols-1 md:grid-cols-3 gap-5 p-5'>
-        {/*fromsection */}
-        <FormSection selectedTemplate=  {selectedTemplate} useFormInput={(v : any)=> GenerateAiContent(v)} loading = {loading}/>
-        
-        {/*outputSection */}
+        <FormSection 
+          selectedTemplate={selectedTemplate} 
+          useFormInput={(v: Record<string, any>) => GenerateAiContent(v)} 
+          loading={loading}
+        />
         <div className='col-span-2'>
-          <OutputSection outputData = {outputData}/>
+          <OutputSection outputData={outputData} />
         </div>
-        
-        </div>
+      </div>
     </div>
-    
-  )
-}
+  );
+};
 
-export default createNewContent
+export default CreateNewContent;
