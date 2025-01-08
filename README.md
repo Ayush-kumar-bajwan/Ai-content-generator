@@ -1,39 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Content Generator 🤖
 
-## Getting Started
+A powerful content generation platform built with Next.js and Google's Gemini AI. Create high-quality content for blogs, YouTube, and more with intelligent AI assistance.
 
-First, run the development server:
+![landing page](https://github.com/user-attachments/assets/e7668a71-e3db-4cd4-9383-3f7bd31d4c86)
+*Modern landing page with seamless user experience*
 
+## 🌟 Features
+
+- **Multiple Content Templates**
+  - Blog Title Generation
+  - Blog Content Creation
+  - YouTube Description Generator
+  - Instagram Post Generator
+
+- **Smart AI Integration**
+  - Powered by Google Gemini AI
+  - Context-aware content generation
+  - Natural language processing
+
+- **User Dashboard**
+  ![Dashboard](https://github.com/user-attachments/assets/849e03fc-7ba6-45f6-827e-46203dede4ac)
+
+  - Intuitive content generation interface
+  - Template selection
+  - Real-time AI content generation
+
+- **Content History**
+  ![History Page](https://github.com/user-attachments/assets/ba7110ac-8635-425b-a418-2dc3a76ae468)
+
+  - Track all generated content
+  - Easy access to previous generations
+  - Content organization
+
+- **Premium Features**
+  ![Billing](https://github.com/user-attachments/assets/98d89146-4db7-4259-9926-a6e8e88a9072)
+
+  - Subscription management
+  - Usage tracking
+  - Razorpay payment integration
+
+## 🛠️ Tech Stack
+
+- **Frontend**:  
+  ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)  
+  ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)  
+  ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwindcss&logoColor=white)
+
+- **Authentication**:  
+  ![Clerk](https://img.shields.io/badge/Clerk-F03C02?style=flat&logo=clerk&logoColor=white)
+
+- **Database**:  
+  ![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-006DFA?style=flat&logo=postgresql&logoColor=white)  
+  ![Neon DB](https://img.shields.io/badge/Neon_DB-0B1925?style=flat&logo=postgresql&logoColor=white)
+
+- **AI**:  
+  ![Google Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=flat&logo=google&logoColor=white)
+
+- **Payments**:  
+  ![Razorpay](https://img.shields.io/badge/Razorpay-003572?style=flat&logo=razorpay&logoColor=white)
+
+- **Deployment**:  
+  ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)
+
+## 🚀 Live Demo
+
+Experience the application live: [AI Content Generator](https://ai-content-generator-6aru-mw73rhjuf.vercel.app/)
+
+## 💻 Local Development
+
+1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## LIVE LINK
-checkout [here](https://ai-content-generator-6aru-mw73rhjuf.vercel.app/)
+git clone https://github.com/Ayush-kumar-bajwan/Ai-content-generator.git
